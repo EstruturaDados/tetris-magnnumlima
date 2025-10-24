@@ -11,7 +11,7 @@ typedef struct {
     int id;     // ID único da peça
 } Peca;
 
-// fila circular
+// Fila circular
 typedef struct {
     Peca pecas[TAM_FILA];
     int frente;
@@ -19,17 +19,17 @@ typedef struct {
     int qtd;
 } Fila;
 
-// pilha
+// Pilha
 typedef struct {
     Peca pecas[TAM_PILHA];
     int topo;
 } Pilha;
 
-// variáveis
+// Variáveis globais
 char tipos[] = {'I', 'O', 'T', 'L'};
 int contadorID = 0;
 
-// peças aleatórias
+// gerar peças aleatórias
 Peca gerarPeca() {
     Peca p;
     p.nome = tipos[rand() % 4];
@@ -37,13 +37,14 @@ Peca gerarPeca() {
     return p;
 }
 
-// -- fila --
+// -- Funções da fila --
 void inicializarFila(Fila *f) {
     f->frente = 0;
     f->tras = -1;
     f->qtd = 0;
-    for (int i = 0; i < TAM_FILA; i++)
-        f->pecas[i] = gerarPeca();
+    for (int i = 0; i < TAM_FILA; i++) {
+        enfileirar(f, gerarPeca());  
+    }
 }
 
 int filaVazia(Fila *f) {
@@ -68,7 +69,7 @@ Peca desenfileirar(Fila *f) {
     return p;
 }
 
-// -- pilha --
+// -- Funções da pilha --
 void inicializarPilha(Pilha *p) {
     p->topo = -1;
 }
@@ -93,7 +94,7 @@ Peca desempilhar(Pilha *p) {
     return pe;
 }
 
-// -- ações do Jogo --
+// -- Ações do jogo --
 void jogarPeca(Fila *f) {
     if (filaVazia(f)) {
         printf("Fila vazia!\n");
@@ -101,7 +102,7 @@ void jogarPeca(Fila *f) {
     }
     Peca p = desenfileirar(f);
     printf("Jogou a peça [%c %d]\n", p.nome, p.id);
-    enfileirar(f, gerarPeca());  // manter fila cheia
+    enfileirar(f, gerarPeca()); 
 }
 
 void reservarPeca(Fila *f, Pilha *p) {
@@ -156,7 +157,7 @@ void trocaMultipla(Fila *f, Pilha *p) {
 void mostrarEstadoVisual(Fila *f, Pilha *p) {
     printf("\n=== Estado Atual ===\n");
 
-    // Mostrar pilha verticalmente (Topo -> Base)
+    // pilha verticalmente (Topo -> Base)
     printf("Pilha de reserva (Topo -> Base):\n");
     for (int i = TAM_PILHA - 1; i >= 0; i--) {
         if (i <= p->topo)
@@ -165,7 +166,7 @@ void mostrarEstadoVisual(Fila *f, Pilha *p) {
             printf("   [    ]\n");
     }
 
-// fila horizontalmente (Frente -> Tras)
+    // Fila horizontalmente (Frente -> Tras)
     printf("\nFila de peças (Frente -> Tras):\n   ");
     for (int i = 0; i < f->qtd; i++) {
         int idx = (f->frente + i) % TAM_FILA;
@@ -174,7 +175,7 @@ void mostrarEstadoVisual(Fila *f, Pilha *p) {
     printf("\n====================\n");
 }
 
-// -- Menu Principal --
+// -- Menu principal --
 int main() {
     srand(time(NULL));
     Fila fila;
@@ -194,6 +195,7 @@ int main() {
         printf("0 - Sair\n");
         printf("Escolha: ");
         scanf("%d", &opcao);
+        while(getchar() != '\n'); 
 
         switch(opcao) {
             case 1: jogarPeca(&fila); break;
